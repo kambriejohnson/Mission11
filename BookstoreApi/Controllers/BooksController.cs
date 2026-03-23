@@ -16,9 +16,16 @@ namespace BookstoreApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Book> Get()
+        public IEnumerable<Book> Get(string? category)
         {
-            return _context.Books.ToList();
+            var query = _context.Books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                query = query.Where(b => b.Classification == category);
+            }
+
+            return query.ToList();
         }
     }
 }

@@ -184,3 +184,4 @@
 /Users/kambriejohnson/Downloads/IS 413/Mission11/BookstoreApi/obj/Debug/net10.0/BookstoreApi.pdb
 /Users/kambriejohnson/Downloads/IS 413/Mission11/BookstoreApi/obj/Debug/net10.0/BookstoreApi.genruntimeconfig.cache
 /Users/kambriejohnson/Downloads/IS 413/Mission11/BookstoreApi/obj/Debug/net10.0/ref/BookstoreApi.dll
+/Users/kambriejohnson/Downloads/IS 413/Mission11/BookstoreApi/obj/Debug/net10.0/BookstoreApi.sourcelink.json
