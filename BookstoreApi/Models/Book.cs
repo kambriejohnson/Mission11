@@ -12,6 +12,8 @@ namespace BookstoreApi.Models
 
         public string ISBN { get; set; }
 
+        public string Category { get; set; }
+
         public string Classification { get; set; }
 
         public int PageCount { get; set; }

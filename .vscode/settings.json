@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/fe28266e-2d4f-488d-90aa-8acbc3b08233/resourceGroups/appsvc_windows_eastus/providers/Microsoft.Web/sites/bookstore-backend",
+    "appService.deploySubpath": "BookstoreApi"
+}

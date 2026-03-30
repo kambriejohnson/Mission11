@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom"
 import CartPage from "./CartPage"
+import AdminBooksPage from "./AdminBooksPage"
 
 function App() {
   const navigate = useNavigate()
@@ -246,6 +247,8 @@ function App() {
           />
         }
       />
+
+      <Route path="/adminbooks" element={<AdminBooksPage />} />
     </Routes>
   )
 }
