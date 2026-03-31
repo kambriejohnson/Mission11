@@ -20,15 +20,24 @@ function App() {
   const [returnCategory, setReturnCategory] = useState("")
 
   useEffect(() => {
-    let url = "http://localhost:5087/Books"
+    let url = "https://bookstore-backend-hrceaafxeyd9akfy.eastus-01.azurewebsites.net/Books"
 
     if (selectedCategory !== "") {
       url += `?category=${selectedCategory}`
     }
 
     fetch(url)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch books")
+        }
+        return res.json()
+      })
       .then((data) => setBooks(data))
+      .catch((err) => {
+        console.error(err)
+        setBooks([])
+      })
   }, [selectedCategory])
 
   useEffect(() => {

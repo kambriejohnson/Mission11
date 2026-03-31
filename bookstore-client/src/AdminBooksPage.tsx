@@ -24,24 +24,34 @@ const emptyBook: Book = {
   price: 0
 }
 
-const API_URL = "https://bookstore-backend-hrceaafxeyd9akfy.eastus-01.azurewebsites.net"
+const API_URL = "https://bookstore-backend-hrceaafxeyd9akfy.eastus-01.azurewebsites.net/Books"
 
 function AdminBooksPage() {
   const [books, setBooks] = useState<Book[]>([])
   const [formData, setFormData] = useState<Book>(emptyBook)
   const [editing, setEditing] = useState(false)
 
-  const fetchBooks = () => {
-  fetch(`${API_URL}/Books`)
-    .then((res) => res.json())
-    .then((data) => setBooks(data))
-}
+  const fetchBooks = async () => {
+    try {
+      const res = await fetch(API_URL)
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch books")
+      }
+
+      const data = await res.json()
+      setBooks(data)
+    } catch (error) {
+      console.error(error)
+      setBooks([])
+    }
+  }
 
   useEffect(() => {
     fetchBooks()
   }, [])
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
 
     setFormData({
@@ -50,13 +60,10 @@ function AdminBooksPage() {
     })
   }
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const url = editing
-  ? `${API_URL}/Books/${formData.bookId}`
-  : `${API_URL}/Books`
-
+    const url = editing ? `${API_URL}/${formData.bookId}` : API_URL
     const method = editing ? "PUT" : "POST"
 
     const bookToSend = {
@@ -64,21 +71,26 @@ function AdminBooksPage() {
       category: formData.classification
     }
 
-    const response = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bookToSend)
-    })
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookToSend)
+      })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      alert(errorText)
-      return
+      if (!response.ok) {
+        const errorText = await response.text()
+        alert(errorText || "Something went wrong")
+        return
+      }
+
+      setFormData(emptyBook)
+      setEditing(false)
+      fetchBooks()
+    } catch (error) {
+      console.error(error)
+      alert("Could not connect to the backend.")
     }
-
-    setFormData(emptyBook)
-    setEditing(false)
-    fetchBooks()
   }
 
   const handleEdit = (book: Book) => {
@@ -90,10 +102,22 @@ function AdminBooksPage() {
   }
 
   const handleDelete = async (id: number) => {
-    await fetch(`${API_URL}/Books/${id}`, {
-      method: "DELETE"
-    })
-    fetchBooks()
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        alert(errorText || "Failed to delete book")
+        return
+      }
+
+      fetchBooks()
+    } catch (error) {
+      console.error(error)
+      alert("Could not connect to the backend.")
+    }
   }
 
   return (
@@ -101,97 +125,97 @@ function AdminBooksPage() {
       <h1 className="text-center mb-4">Admin Book Management</h1>
 
       <form onSubmit={handleSubmit} className="mb-4">
-  <div className="mb-2">
-    <label>Title</label>
-    <input
-      name="title"
-      className="form-control"
-      placeholder="Enter book title"
-      value={formData.title}
-      onChange={handleChange}
-      required
-    />
-  </div>
+        <div className="mb-2">
+          <label>Title</label>
+          <input
+            name="title"
+            className="form-control"
+            placeholder="Enter book title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-  <div className="mb-2">
-    <label>Author</label>
-    <input
-      name="author"
-      className="form-control"
-      placeholder="Enter author name"
-      value={formData.author}
-      onChange={handleChange}
-      required
-    />
-  </div>
+        <div className="mb-2">
+          <label>Author</label>
+          <input
+            name="author"
+            className="form-control"
+            placeholder="Enter author name"
+            value={formData.author}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-  <div className="mb-2">
-    <label>Publisher</label>
-    <input
-      name="publisher"
-      className="form-control"
-      placeholder="Enter publisher"
-      value={formData.publisher}
-      onChange={handleChange}
-      required
-    />
-  </div>
+        <div className="mb-2">
+          <label>Publisher</label>
+          <input
+            name="publisher"
+            className="form-control"
+            placeholder="Enter publisher"
+            value={formData.publisher}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-  <div className="mb-2">
-    <label>ISBN</label>
-    <input
-      name="isbn"
-      className="form-control"
-      placeholder="e.g. 9781234567890"
-      value={formData.isbn}
-      onChange={handleChange}
-      required
-    />
-  </div>
+        <div className="mb-2">
+          <label>ISBN</label>
+          <input
+            name="isbn"
+            className="form-control"
+            placeholder="e.g. 9781234567890"
+            value={formData.isbn}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-  <div className="mb-2">
-    <label>Category</label>
-    <input
-      name="classification"
-      className="form-control"
-      placeholder="Fiction, Non-Fiction, etc."
-      value={formData.classification}
-      onChange={handleChange}
-      required
-    />
-  </div>
+        <div className="mb-2">
+          <label>Category</label>
+          <input
+            name="classification"
+            className="form-control"
+            placeholder="Fiction, Non-Fiction, etc."
+            value={formData.classification}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-  <div className="mb-2">
-    <label>Page Count</label>
-    <input
-      name="pageCount"
-      type="number"
-      className="form-control"
-      placeholder="Enter number of pages"
-      value={formData.pageCount}
-      onChange={handleChange}
-      required
-    />
-  </div>
+        <div className="mb-2">
+          <label>Page Count</label>
+          <input
+            name="pageCount"
+            type="number"
+            className="form-control"
+            placeholder="Enter number of pages"
+            value={formData.pageCount}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-  <div className="mb-2">
-    <label>Price ($)</label>
-    <input
-      name="price"
-      type="number"
-      step="0.01"
-      className="form-control"
-      placeholder="Enter price"
-      value={formData.price}
-      onChange={handleChange}
-      required
-    />
-  </div>
+        <div className="mb-2">
+          <label>Price ($)</label>
+          <input
+            name="price"
+            type="number"
+            step="0.01"
+            className="form-control"
+            placeholder="Enter price"
+            value={formData.price}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-  <button type="submit" className="btn btn-primary mt-3">
-    {editing ? "Update Book" : "Add Book"}
-  </button>
-</form>
+        <button type="submit" className="btn btn-primary mt-3">
+          {editing ? "Update Book" : "Add Book"}
+        </button>
+      </form>
 
       {books.map((b) => (
         <div key={b.bookId} className="mb-2">
